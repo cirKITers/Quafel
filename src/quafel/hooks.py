@@ -46,7 +46,7 @@ class PipelineHooks:
             tempFiles = glob.glob("data/02_intermediate/*.csv")
             for f in tempFiles:
                 os.remove(f)
-            # tempFiles = glob.glob("data/07_reporting/*.tmp")
+            # tempFiles = glob.glob("data/08_reporting/*.tmp")
             # for f in tempFiles:
             #     os.remove(f)
 
@@ -59,11 +59,14 @@ class PipelineHooks:
             tempFiles = glob.glob("data/03_qasm_circuits/*.txt")
             for f in tempFiles:
                 os.remove(f)
-            tempFiles = glob.glob("data/04_execution_results/*.csv")
+            tempFiles = glob.glob("data/04_measures/*.csv")
+            for f in tempFiles:
+                os.remove(f)
+            tempFiles = glob.glob("data/05_execution_results/*.csv")
             for f in tempFiles:
                 os.remove(f)
 
-            tempFiles = glob.glob("data/05_execution_durations/*.csv")
+            tempFiles = glob.glob("data/06_execution_durations/*.csv")
             for f in tempFiles:
                 os.remove(f)
 
@@ -92,20 +95,23 @@ class PipelineHooks:
             tempFiles = glob.glob("data/03_qasm_circuits/*.txt")
             for f in tempFiles:
                 os.remove(f)
-            tempFiles = glob.glob("data/04_execution_results/*.csv")
+            tempFiles = glob.glob("data/04_measures/*.csv")
             for f in tempFiles:
                 os.remove(f)
-            tempFiles = glob.glob("data/05_execution_durations/*.csv")
+            tempFiles = glob.glob("data/05_execution_results/*.csv")
             for f in tempFiles:
                 os.remove(f)
-            tempFiles = glob.glob("data/07_reporting/*.tmp")
+            tempFiles = glob.glob("data/06_execution_durations/*.csv")
+            for f in tempFiles:
+                os.remove(f)
+            tempFiles = glob.glob("data/08_reporting/*.tmp")
             for f in tempFiles:
                 os.remove(f)
 
         if run_params["pipeline_name"] == "prepare":
             # Cleanup all previously generated temp files,
             # we will generate them again below
-            tempFiles = glob.glob("data/07_reporting/*.tmp")
+            tempFiles = glob.glob("data/08_reporting/*.tmp")
             for f in tempFiles:
                 os.remove(f)
             # ----------------------------------------------------------------
@@ -126,23 +132,26 @@ class PipelineHooks:
             names = []
             for fw in evaluation_matrix["frameworks"]:
                 for q in evaluation_matrix["qubits"]:
-                    names.append(f"{fw}_qubits_{q}")
+                    names.append(f"{fw}_qubits_{q}_time")
                 for d in evaluation_matrix["depths"]:
-                    names.append(f"{fw}_depth_{d}")
+                    names.append(f"{fw}_depth_{d}_time")
                 for s in evaluation_matrix["shots"]:
-                    names.append(f"{fw}_shots_{s}")
-
-            for d in evaluation_matrix["depths"]:
-                for s in evaluation_matrix["shots"]:
-                    names.append(f"shots_{s}_depth_{d}")
-
-            for d in evaluation_matrix["depths"]:
-                for q in evaluation_matrix["qubits"]:
-                    names.append(f"qubits_{q}_depth_{d}")
+                    names.append(f"{fw}_shots_{s}_time")
 
             for s in evaluation_matrix["shots"]:
+                for d in evaluation_matrix["depths"]:
+                    names.append(f"shots_{s}_depth_{d}_time")
+                    names.append(f"shots_{s}_depth_{d}_measures")
+
+            for d in evaluation_matrix["depths"]:
                 for q in evaluation_matrix["qubits"]:
-                    names.append(f"shots_{s}_qubits_{q}")
+                    names.append(f"qubits_{q}_depth_{d}_time")
+                    names.append(f"qubits_{q}_depth_{d}_measures")
+
+            for q in evaluation_matrix["qubits"]:
+                for s in evaluation_matrix["shots"]:
+                    names.append(f"shots_{s}_qubits_{q}_time")
+                    names.append(f"shots_{s}_qubits_{q}_measures")
 
             # use the dummy dataset to get the version of the current kedro run, so that it matches the ones from the versioned datasets
             version = Version(
@@ -151,7 +160,7 @@ class PipelineHooks:
 
             # iterate all the names and create a JSONDataSet (plotly) for each one
             for name in names:
-                filepath = os.path.join("data/07_reporting/", f"{name}.json")
+                filepath = os.path.join("data/08_reporting/", f"{name}.json")
 
                 dataset_template = JSONDataSet(filepath=filepath, version=version)
                 catalog.add(name, dataset_template)
@@ -164,7 +173,7 @@ class PipelineHooks:
                     pass
 
                 # create a .tmp file which we will use later in the pipeline_registry to create node outputs dynamically
-                with open(os.path.join("data/07_reporting/", f"{name}.tmp"), "w") as fw:
+                with open(os.path.join("data/08_reporting/", f"{name}.tmp"), "w") as fw:
                     fw.write("")
 
     @hook_impl
@@ -172,13 +181,13 @@ class PipelineHooks:
         # tempFiles = glob.glob("data/02_intermediate/*.csv")
         # for f in tempFiles:
         #     os.remove(f)
-        # tempFiles = glob.glob("data/04_execution_results/*.csv")
+        # tempFiles = glob.glob("data/05_execution_results/*.csv")
         # for f in tempFiles:
         #     os.remove(f)
-        # tempFiles = glob.glob("data/05_execution_durations/*.csv")
+        # tempFiles = glob.glob("data/06_execution_durations/*.csv")
         # for f in tempFiles:
         #     os.remove(f)
-        tempFiles = glob.glob("data/07_reporting/*.tmp")
+        tempFiles = glob.glob("data/08_reporting/*.tmp")
         for f in tempFiles:
             os.remove(f)
 
@@ -221,12 +230,22 @@ class DataCatalogHooks:
             catalog.add(qasm_circuits_name, input_dataset)
 
             # ------------------------------------------------------------------
+            # Create csv dataset from partitioned dataset for measures
+            # ------------------------------------------------------------------
+
+            # evaluation durations
+            measures = partition.replace("02_intermediate", "04_measures")
+            measures_name = f"measure_{Path(measures).stem}"
+            input_dataset = CSVDataSet(filepath=measures)
+            catalog.add(measures_name, input_dataset)
+
+            # ------------------------------------------------------------------
             # Create csv dataset from partitioned dataset for evaluation durations
             # ------------------------------------------------------------------
 
             # evaluation durations
             execution_duration = partition.replace(
-                "02_intermediate", "05_execution_durations"
+                "02_intermediate", "06_execution_durations"
             )
             execution_duration_name = (
                 f"execution_duration_{Path(execution_duration).stem}"
@@ -240,7 +259,7 @@ class DataCatalogHooks:
 
             # evaluation results
             execution_result = partition.replace(
-                "02_intermediate", "04_execution_results"
+                "02_intermediate", "05_execution_results"
             )
             execution_result_name = f"execution_result_{Path(execution_result).stem}"
             input_dataset = CSVDataSet(filepath=execution_result)

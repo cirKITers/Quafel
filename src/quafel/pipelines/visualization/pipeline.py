@@ -11,6 +11,9 @@ from quafel.pipelines.visualization.nodes import (
     qubits_time_viz,
     depth_time_viz,
     shots_time_viz,
+    depth_measures_viz,
+    qubits_measures_viz,
+    shots_measures_viz,
     export_selected,
     extract_tests,
 )
@@ -28,7 +31,9 @@ def create_pipeline(figures, **kwargs) -> dict:
                     **{
                         f: f
                         for f in filter(
-                            lambda s: ("_fw" in s) and ("depth_" in s),
+                            lambda s: ("_fw" in s)
+                            and ("depth_" in s)
+                            and ("time" in s),
                             figures,
                         )
                     },
@@ -45,7 +50,9 @@ def create_pipeline(figures, **kwargs) -> dict:
                     **{
                         f: f
                         for f in filter(
-                            lambda s: ("_fw" in s) and ("qubits_" in s),
+                            lambda s: ("_fw" in s)
+                            and ("qubits_" in s)
+                            and ("time" in s),
                             figures,
                         )
                     },
@@ -62,7 +69,9 @@ def create_pipeline(figures, **kwargs) -> dict:
                     **{
                         f: f
                         for f in filter(
-                            lambda s: ("_fw" in s) and ("shots_" in s),
+                            lambda s: ("_fw" in s)
+                            and ("shots_" in s)
+                            and ("time" in s),
                             figures,
                         )
                     },
@@ -80,7 +89,9 @@ def create_pipeline(figures, **kwargs) -> dict:
                     **{
                         f: f
                         for f in filter(
-                            lambda s: ("shots_" in s) and ("depth_" in s),
+                            lambda s: ("shots_" in s)
+                            and ("depth_" in s)
+                            and ("time" in s),
                             figures,
                         )
                     },
@@ -98,7 +109,9 @@ def create_pipeline(figures, **kwargs) -> dict:
                     **{
                         f: f
                         for f in filter(
-                            lambda s: ("qubits_" in s) and ("depth_" in s),
+                            lambda s: ("qubits_" in s)
+                            and ("depth_" in s)
+                            and ("time" in s),
                             figures,
                         )
                     },
@@ -116,13 +129,72 @@ def create_pipeline(figures, **kwargs) -> dict:
                     **{
                         f: f
                         for f in filter(
-                            lambda s: ("shots_" in s) and ("qubits_" in s),
+                            lambda s: ("shots_" in s)
+                            and ("qubits_" in s)
+                            and ("time" in s),
                             figures,
                         )
                     },
                 },
                 tags=["static"],
                 name=f"depth_time_viz",
+            ),
+            node(
+                func=depth_measures_viz,
+                inputs={
+                    "evaluations_combined": "evaluations_combined",
+                },
+                outputs={
+                    **{
+                        f: f
+                        for f in filter(
+                            lambda s: ("shots_" in s)
+                            and ("qubits_" in s)
+                            and ("measures" in s),
+                            figures,
+                        )
+                    },
+                },
+                tags=["static"],
+                name=f"depth_measures_viz",
+            ),
+            node(
+                func=shots_measures_viz,
+                inputs={
+                    "evaluations_combined": "evaluations_combined",
+                },
+                outputs={
+                    **{
+                        f: f
+                        for f in filter(
+                            lambda s: ("qubits_" in s)
+                            and ("depth_" in s)
+                            and ("measures" in s),
+                            figures,
+                        )
+                    },
+                },
+                tags=["static"],
+                name=f"shots_measures_viz",
+            ),
+            node(
+                func=qubits_measures_viz,
+                inputs={
+                    "evaluations_combined": "evaluations_combined",
+                },
+                outputs={
+                    **{
+                        f: f
+                        for f in filter(
+                            lambda s: ("shots_" in s)
+                            and ("depth_" in s)
+                            and ("measures" in s),
+                            figures,
+                        )
+                    },
+                },
+                tags=["static"],
+                name=f"qubits_measures_viz",
             ),
         ],
         inputs={

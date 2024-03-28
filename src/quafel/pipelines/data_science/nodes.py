@@ -71,6 +71,7 @@ def combine_evaluations(
     evaluation_partitions: Dict,
     execution_durations: Dict,
     execution_results: Dict,
+    measures: Dict,
 ):
     combine_all = pd.DataFrame()
 
@@ -78,17 +79,22 @@ def combine_evaluations(
         (partition_id, partition_load_func),
         (duration_id, duration_load_func),
         (result_id, result_load_func),
+        (measure_id, measure_load_func),
     ) in zip(
         evaluation_partitions.items(),
         execution_durations.items(),
         execution_results.items(),
+        measures.items(),
     ):
-        assert (partition_id == duration_id) and (
-            partition_id == result_id
+        assert (
+            (partition_id == duration_id)
+            and (partition_id == result_id)
+            and (partition_id == measure_id)
         ), "Partition identifiers do not match duration and result identifiers."
         partition_data = partition_load_func()
         duration_data = duration_load_func()
         result_data = result_load_func()
+        measure_data = measure_load_func()
 
         # TODO: unify somehow with the generation part
         partition_data.index = ["framework", "qubits", "depth", "shots"]
@@ -109,8 +115,11 @@ def combine_evaluations(
 
         result_data.index = [f"result_{i}" for i in range(len(result_data))]
 
+        measure_data = measure_data.T
+        measure_data.columns = [partition_id]
+
         combined_partition_duration = pd.concat(
-            [partition_data, duration_data, result_data],
+            [partition_data, duration_data, result_data, measure_data],
             ignore_index=False,
             axis=0,
         )

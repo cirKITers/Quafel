@@ -54,6 +54,7 @@ def create_pipeline(partitions, **kwargs) -> dict:
                     "evaluation_partitions": "evaluation_partitions",
                     "execution_durations": "execution_durations",
                     "execution_results": "execution_results",
+                    "measures": "measures",
                 },
                 outputs={
                     "evaluations_combined": "evaluations_combined",
@@ -66,6 +67,7 @@ def create_pipeline(partitions, **kwargs) -> dict:
             "evaluation_partitions": "evaluation_partitions",
             "execution_durations": "execution_durations",
             "execution_results": "execution_results",
+            "measures": "measures",
         },
         outputs={
             "evaluations_combined": "evaluations_combined",

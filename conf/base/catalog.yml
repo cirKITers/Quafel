@@ -29,13 +29,22 @@ qasm_circuits: # example to save results to multiple partitions
   path: data/03_qasm_circuits/
   filename_suffix: ".txt"
 
+measures: # example to save results to multiple partitions
+  type: PartitionedDataSet
+  dataset:
+    type: pandas.CSVDataSet
+    # save_args:
+    #   index: False
+  path: data/04_measures/
+  filename_suffix: ".csv"
+
 execution_results: # example to save results to multiple partitions
   type: PartitionedDataSet
   dataset:
     type: pandas.CSVDataSet
     # save_args:
     #   index: False
-  path: data/04_execution_results/
+  path: data/05_execution_results/
   filename_suffix: ".csv"
 
 execution_durations: # example to save results to multiple partitions
@@ -44,23 +53,23 @@ execution_durations: # example to save results to multiple partitions
     type: pandas.CSVDataSet
     # save_args:
     #   index: False
-  path: data/05_execution_durations/
+  path: data/06_execution_durations/
   filename_suffix: ".csv"
 
 
 evaluations_combined:
   type: pandas.CSVDataSet
-  filepath: data/06_evaluations_combined/evaluations_combined.csv
+  filepath: data/07_evaluations_combined/evaluations_combined.csv
   # save_args:
   #   index: False
   versioned: true
 
 dummy_versioned_dataset: # example to save results to multiple 
   type: pandas.CSVDataSet
-  filepath: data/07_reporting/dummy.csv
+  filepath: data/08_reporting/dummy.csv
   versioned: true
 
 # numpy_fw_depth_1: # example to save results to multiple 
 #   type: plotly.JSONDataSet
-#   filepath: data/07_reporting/numpy_fw_depth_1.json
+#   filepath: data/08_reporting/numpy_fw_depth_1.json
 #   versioned: true

@@ -2,6 +2,8 @@
 
 data_generation:
   seed: 1111
+  # samples for calculating the expressibility and entangling capability
+  samples_per_qubit: 20
 
   min_qubits: 1
   max_qubits: 16
@@ -26,6 +28,9 @@ data_generation:
 
 # data_generation:
 #   seed: 1111
+#   samples for calculating the expressibility and entangling capability
+#   samples_per_qubit: 20
+
 
 #   min_qubits: 1
 #   max_qubits: 12
@@ -50,6 +55,8 @@ data_generation:
 
 # data_generation:
 #   seed: 1111
+#   samples for calculating the expressibility and entangling capability
+#   samples_per_qubit: 20
 
 #   min_qubits: 1
 #   max_qubits: 5
@@ -74,6 +81,8 @@ data_generation:
 
 # data_generation:
 #   seed: 1111
+#   samples for calculating the expressibility and entangling capability
+#   samples_per_qubit: 20
 
 #   min_qubits: 1
 #   max_qubits: 3
@@ -98,18 +107,20 @@ data_generation:
 
 # data_generation:
 #   seed: 1111
+#   # samples for calculating the expressibility and entangling capability
+#   samples_per_qubit: 20
 
-#   min_qubits: 1
-#   max_qubits: 4
+#   min_qubits: 15
+#   max_qubits: 16
 #   qubits_increment: 1
 #   qubits_type: "linear"
 
-#   min_depth: 0
-#   max_depth: 5
+#   min_depth: 9
+#   max_depth: 10
 #   depth_increment: 1
 #   depth_type: "exp2"
 
-#   min_shots: 0
+#   min_shots: 5
 #   max_shots: 5
 #   shots_increment: 1
 #   shots_type: "exp2"

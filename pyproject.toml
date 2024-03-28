@@ -20,6 +20,8 @@ distributed = "^2023.10.0"
 bokeh = "^3.3.0"
 qrisp = "^0.3.0"
 plotly = "^5.18.0"
+jax = "^0.4.25"
+jaxlib = "^0.4.25"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"
